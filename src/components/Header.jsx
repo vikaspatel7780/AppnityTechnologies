@@ -1,11 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
-  // Style for active link
+  // Prevent scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "auto";
+  }, [menuOpen]);
+
   const activeClass = "text-blue-600 font-semibold border-b-2 border-blue-600";
 
   return (
@@ -51,24 +55,26 @@ export default function Header() {
         </div>
       </nav>
 
-      {/* Mobile Dropdown Menu */}
+      {/* Fullscreen Mobile Menu Overlay */}
       {menuOpen && (
-        <div className="lg:hidden px-4 py-3 space-y-3 bg-white border-t font-medium">
-          {["/", "/about", "/services", "/portfolio", "/contact"].map((path, i) => {
-            const name = path === "/" ? "Home" : path.slice(1).charAt(0).toUpperCase() + path.slice(2);
-            return (
-              <NavLink
-                key={i}
-                to={path}
-                onClick={toggleMenu}
-                className={({ isActive }) =>
-                  "block hover:text-blue-600 transition " + (isActive ? activeClass : "")
-                }
-              >
-                {name}
-              </NavLink>
-            );
-          })}
+        <div className="fixed inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="fixed top-0 right-0 w-64 h-full bg-white shadow-md p-6 z-50 flex flex-col space-y-4 font-medium">
+            {["/", "/about", "/services", "/portfolio", "/contact"].map((path, i) => {
+              const name = path === "/" ? "Home" : path.slice(1).charAt(0).toUpperCase() + path.slice(2);
+              return (
+                <NavLink
+                  key={i}
+                  to={path}
+                  onClick={toggleMenu}
+                  className={({ isActive }) =>
+                    "hover:text-blue-600 transition " + (isActive ? activeClass : "")
+                  }
+                >
+                  {name}
+                </NavLink>
+              );
+            })}
+          </div>
         </div>
       )}
     </header>
